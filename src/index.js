@@ -1,6 +1,7 @@
 
+const readline = require('node:readline');
+const { stdin: input, stdout: output } = require('node:process');
 console.log("hello world");
-
 
 
 // example: Player 1 moves to the center of 3x3 grid
@@ -21,10 +22,9 @@ let exampleMove =
 //   move into a spot that is full
 //  X move twice in a row
 // If there are no moves left available and no one has won, return -1
-function tttSolve(moves) {
+function tttSolve(moves,board = Array.from({length : 3}).map(() => new Array(3).fill(0)) ) {
     const BOARD_SIZE = 3;
     const FINAL_ROUND = 9;
-    const board = Array.from({length : 3}).map(() => new Array(3).fill(0));
     let previousPlayer;
     for (let i = 0; i < moves.length; i++){
         const move = moves[i];
@@ -114,6 +114,43 @@ function tttSolveBoard(board) {
 // afterwards, print the board and ask the other player
 // repeat until the game is over
 function playTTT(){
+    console.log('playTTT was called');
+    const board = Array.from({length : 3}).map(() => new Array(3).fill(0));
+    let isGameOver = false;
+    let player = "x";
+    // "x" -> player1
+    // "o" -> player2
+    let playerNumber = player === 'x' ? 1 : 2;
+
+    console.log(`player${playerNumber}'s turn`)
+
+    while (!isGameOver){
+
+        const rl = readline.createInterface({ input, output });
+        rl.prompt('what do you think?', (answer) => {
+            console.log(`Thank you for your valuable feedback: ${answer}`);
+            
+
+            let move = answer;
+            let xCommand = move.split(',')[0].trim();
+            let yCommand = move.split(',')[1].trim();
+            
+            if (Number(xCommand) === NaN || Number(yCommand) === NaN){
+                console.log(`Invalid move, please try again`);
+                rl.close();
+
+            }
+            const gameWinner = tttSolve([Move(playerNumber,xCommand,yCommand)],board);
+    
+            if (gameWinner !== 0) {
+                isGameOver = true
+            }
+    
+            player = player === 'x' ? 'o' : 'x';
+
+            rl.close();
+        })
+    }
     
 }
 
@@ -187,4 +224,4 @@ console.log("Cat's Game", tttSolve([
 
 console.log("")
 
-playTTT
+playTTT()
